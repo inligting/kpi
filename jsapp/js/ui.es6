@@ -7,9 +7,7 @@ import _ from 'underscore';
 import bem from './bem';
 import {t, assign} from './utils';
 import classNames from 'classnames';
-
-var hotkey = require('react-hotkey');
-hotkey.activate();
+import {HotKeys} from 'react-hotkeys';
 
 class SearchBox extends React.Component {
   constructor (props) {
@@ -53,11 +51,10 @@ class Modal extends React.Component {
     super(props);
     autoBind(this);
   }
-  handleHotkey (evt) {
-    if (evt.keyCode === 27) {
-      this.props.onClose.call(evt);
-    }
+  componentDidMount() {
+    ReactDOM.findDOMNode(this.refs.modal).focus();    
   }
+
   backdropClick (evt) {
     if (evt.currentTarget === evt.target) {
       this.props.onClose.call(evt);
@@ -87,12 +84,13 @@ class Modal extends React.Component {
   }
   render () {
     return (
-      // m={['done', isSearch ? 'search' : 'default']}
-      <div className={classNames('modal-backdrop', this.props.className,
-            this.props.large ? 'modal-large' : null,
-            this.props.error ? 'modal-error' : null,
-            this.props.title ? 'modal-titled' : null)}
-          onClick={this.backdropClick}>
+      <HotKeys  handlers={{closeModal: this.props.onClose}}
+                className={classNames('modal-backdrop', this.props.className,
+                  this.props.large ? 'modal-large' : null,
+                  this.props.error ? 'modal-error' : null,
+                  this.props.title ? 'modal-titled' : null)}
+                onClick={this.backdropClick}
+                ref='modal'>
         <div className={classNames(this.props.open ? 'modal-open' : 'modal', this.props.icon ? 'modal--withicon' : null)}>
           {this.props.icon ?
             <i className={classNames('modal_icon', `modal_icon--${this.props.icon}`)} />
@@ -107,12 +105,10 @@ class Modal extends React.Component {
             {this.props.children}
           </div>
         </div>
-      </div>
+      </HotKeys>
     );
   }
 };
-
-reactMixin(Modal.prototype, hotkey.Mixin('handleHotkey'));
 
 class Footer extends React.Component {
   constructor(props) {

@@ -12,7 +12,6 @@ import icons from '../../xlform/src/view.icons';
 class Submission extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props);
     this.state = {
       submission: {},
       loading: true,

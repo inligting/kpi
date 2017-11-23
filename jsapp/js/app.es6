@@ -59,8 +59,12 @@ import {
   currentLang
 } from './utils';
 
-import hotkey from 'react-hotkey';
-hotkey.activate();
+import {HotKeys} from 'react-hotkeys';
+
+const hotkeysMap = {
+  'toggleEdge': 'alt+e',
+  'closeModal': ['esc', 'backspace']
+};
 
 var assetStore = stores.asset;
 var sessionStore = stores.session;
@@ -88,16 +92,14 @@ class App extends React.Component {
     if (this.state.pageState.showFixedDrawer)
       stores.pageState.setState({showFixedDrawer: false});
   }
-  handleHotkey (e) {
-    if (e.altKey && (e.keyCode == '69' || e.keyCode == '186')) {
-      document.body.classList.toggle('hide-edge');
-    }
+  toggleEdge() {
+    document.body.classList.toggle('hide-edge');
   }
   render() {
     var assetid = this.props.params.assetid || null;
     return (
       <DocumentTitle title="KoBoToolbox">
-        <div className="mdl-wrapper">
+        <HotKeys keyMap={hotkeysMap} handlers={{toggleEdge: this.toggleEdge}} className="mdl-wrapper">
           { !this.isFormBuilder() && !this.state.pageState.headerHidden && 
             <div className="k-header__bar"></div>
           }
@@ -127,7 +129,7 @@ class App extends React.Component {
 
               </bem.PageWrapper__content>
           </bem.PageWrapper>
-        </div>
+        </HotKeys>
       </DocumentTitle>
     );
   }
@@ -138,7 +140,6 @@ App.contextTypes = {
 };
 
 reactMixin(App.prototype, Reflux.connect(stores.pageState, 'pageState'));
-reactMixin(App.prototype, hotkey.Mixin('handleHotkey'));
 reactMixin(App.prototype, mixins.contextRouter);
 
 class FormJson extends React.Component {
